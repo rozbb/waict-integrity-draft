@@ -389,6 +389,8 @@ WebAssembly modules can be compiled and instantiated through several APIs:
 
 WAICT integrity checking applies to all of these paths. The check is performed on the raw WebAssembly module bytes regardless of how they were obtained.
 
+A `WebAssembly.Module` is also a [serializable object](https://webassembly.github.io/spec/js-api/#serialization), so it can enter a realm without recompilation by being structured-cloned from another realm (e.g. via `postMessage()`). This path is covered in [Module Transfer via Structured Cloning](#module-transfer-via-structured-cloning).
+
 ## Integration with HostEnsureCanCompileWasmBytes
 
 WebAssembly defines the [`HostEnsureCanCompileWasmBytes()`](https://webassembly.github.io/content-security-policy/js-api/#host-ensure-can-compile-wasm-bytes) abstract operation, which allows the host environment to block compilation of WebAssembly source bytes. CSP3 [implements this hook](https://www.w3.org/TR/CSP3/#can-compile-wasm-bytes) to enforce its `script-src` directive. WAICT adds an additional check within this hook.
@@ -399,6 +401,15 @@ When WAICT is active for the current top-level origin, the user-agent MUST execu
 1. Resolve the manifest as in steps 2–4 of [Integrity Check](#integrity-check): wait for the manifest with an implementation-defined timeout (`manifest_unavailable` on timeout), reject invalid manifests (`invalid_manifest`), and treat tombstones as success.
 1. Let `h` be the base64urlnopad-encoded SHA-256 hash of `bytes`. If `manifest["wasm_hashes"]` is present and `h` is a member of it, return normally (compilation is permitted). Otherwise, the failure reason is `wasm_hash_mismatch` (or the manifest reason from the previous step).
 1. Handle the failure under the mode of `mode-wasm` as described in [Handling Failures](#handling-failures). In `warn` mode the user-agent MAY perform this hash check asynchronously without blocking compilation, surfacing the warning UX once the failure is observed.
+
+## Module Transfer via Structured Cloning
+
+Deserializing a `WebAssembly.Module` reconstructs it from its serialized bytes without invoking `HostEnsureCanCompileWasmBytes()`.
+
+When a `WebAssembly.Module` is deserialized into a realm, the user-agent MUST run the same check as the [`HostEnsureCanCompileWasmBytes` integration](#integration-with-hostensurecancompilewasmbytes), with `bytes` set to the module's serialized bytes (its `[[Bytes]]`), before the `Module` is exposed to script:
+
+* The check MUST use the receiving realm's WAICT manifest, never the sending realm's, and applies even if the user-agent reuses a cached compiled representation of the module.
+* On failure in `enforce` mode, the `Module` MUST NOT be exposed: deserialization fails, yielding a [`messageerror`](https://html.spec.whatwg.org/multipage/web-messaging.html#event-messageerror) event for `postMessage()` or a `DataCloneError` for `structuredClone()`. `warn` and `report` modes expose the `Module` and surface the failure as for any other `mode-wasm` check.
 
 # Inline Scripts, Styles, and Dynamic Code
 
@@ -490,7 +501,7 @@ In `enforce` mode, the user-agent MUST prevent the violating behavior. The exact
 
 * `manifest_unavailable`, `invalid_manifest`, `invalid_transparency_proof` — display a warning page to the user indicating the error. The user-agent SHOULD NOT allow the user to bypass the warning.
 * `missing_from_manifest`, `no_manifest_match` — return an appropriate [network error](https://fetch.spec.whatwg.org/#concept-network-error) for the fetch.
-* `wasm_hash_mismatch` — throw a `WebAssembly.CompileError`, as described in [Changes to WebAssembly Processing](#changes-to-webassembly-processing).
+* `wasm_hash_mismatch` — for a compilation API, throw a `WebAssembly.CompileError`; for a module arriving via structured cloning, fail deserialization so the `Module` is never exposed (a `messageerror` event or a `DataCloneError`). See [Changes to WebAssembly Processing](#changes-to-webassembly-processing).
 * `inline_violation` — block the inline behavior: do not execute the inline script or style, do not compile the dynamic-code string, do not navigate the `javascript:` URI, do not fetch the `data:` or `blob:` URL, and do not load the `srcdoc` document. For `data:` and `blob:` URLs, the blocking is performed by the CSP source-list check after WAICT removes the scheme source expression (see [`data:` and `blob:` URLs as Active Content](#data-and-blob-urls-as-active-content)).
 
 # Non-Normative Appendices
