@@ -168,7 +168,8 @@ WAICT manifests provide a public commitment to the web application(s) being serv
 
 ## Fetching Manifests
 
-When a fetch for a resource is governed by a category in `enforce` mode, the fetch will be unable to complete successfully until a manifest is available. When the governing category is in `warn` or `report` mode, the fetch will be unable to complete successfully until a manifest is available or an implementation-defined timeout occurs. User-agents SHOULD fetch WAICT manifests with high priority as soon as they become aware of them.
+When a fetch for a resource is governed by a category in `enforce` mode, the fetch will be unable to complete successfully until a manifest is available. When the governing category is in `report` mode, the fetch will be unable to complete successfully until a manifest is available or an implementation-defined timeout occurs. In `warn` mode, the fetch should not be blocked on manifest availability.
+User-agents SHOULD fetch WAICT manifests with high priority as soon as they become aware of them.
 
 The manifest located at a given URL is expected to be immutable and SHOULD have its response set [`Cache-Control`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control) to include `immutable` and a long `max-age`. Sites can notify user-agents that an updated manifest is available by updating the `manifest` field of the WAICT header. User-agents only need to store the contents of one manifest per top-level origin at a time.
 
