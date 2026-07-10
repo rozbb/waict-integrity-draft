@@ -46,7 +46,7 @@ The header is a structured response header (Dictionary type per [RFC 9651](https
 
 The data located at the `manifest` URL MUST be immutable, i.e., the unencoded response body of a successful GET request to that URL MUST never change. To achieve this, implementers SHOULD include a SHA-256 hash of the unencoded response body in the URL itself, encoded in base64url, and truncated to 22 characters (equivalent to base64urlnopad truncated to 22 characters; this encodes 128 bits).
 
-In addition, the header MUST contain at least one **category key**. Category keys are prefixed with `mode-` and indicate which classes of integrity check the user-agent should enforce for this origin, and at what strictness. Each category key has an `sf-token` value drawn from `enforce`, `warn`, or `report`:
+In addition, the header MUST contain at least one **category key**. Category keys are prefixed with `mode-` and indicate which classes of integrity check the user-agent should enforce for this origin, and at what strictness. Categories not listed in the header are not subject to any WAICT enforcement. Each category key has an `sf-token` value drawn from `enforce`, `warn`, or `report`:
 
 * `enforce` — failures of this category are blocked, surfaced through a network error or equivalent (see [Enforce Mode](#enforce-mode)).
 * `warn` — the operation is permitted to proceed, but the user-agent surfaces a user-visible warning if a check fails (see [Warn Mode](#warn-mode)).
