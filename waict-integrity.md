@@ -477,7 +477,7 @@ The `reason` entry takes one of the following values:
 * `invalid_manifest` — The manifest was loaded, but was malformed, had unexpected types, or was missing required fields (including `transparency_proof`).
 * `invalid_transparency_proof` — A manifest and transparency proof were provided, but the proof could not be parsed.
 * `missing_from_manifest` — A valid manifest was available, but this resource was not covered.
-* `no_manifest_match` — A valid manifest was available and described this resource, but the resource did not match the manifest entry.
+* `no_manifest_match` — A valid manifest was available and described this resource, but the hash of the resource did not match the manifest entry.
 * `wasm_hash_mismatch` — A WebAssembly module's bytes did not match any hash in `wasm_hashes`.
 * `inline_violation` — An inline script, inline style, dynamic-code path, `javascript:` URI, `data:` or `blob:` URL, or `srcdoc` iframe violated its governing category's restriction.
 
