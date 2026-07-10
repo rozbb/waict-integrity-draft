@@ -262,7 +262,7 @@ The first property above allows origins to keep WAICT transparency disabled by a
 
 ## Interaction with SRI and Integrity Policy
 
-[SRI](https://www.w3.org/TR/sri-2/) and [Integrity Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Integrity-Policy) are alternative sources of integrity metadata and policy rules for enforcing integrity. When handling a request which is covered by WAICT, the user agent MUST ignore any provided SRI metadata and any applicable integrity policy. This allows origins to offer support for all three standards simultaneously without requiring user-agents to hash resources multiple times or enter inconsistent enforcement states. WAICT deliberately uses the same type of integrity checks as SRI in order to allow the same codepaths to be used.
+[SRI](https://www.w3.org/TR/sri-2/) and [Integrity Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Integrity-Policy) are alternative sources of integrity metadata and policy rules for enforcing integrity. When handling a request which is covered by WAICT, the user agent MUST ignore any provided SRI metadata and any applicable integrity policy, unless the applicable manifest is a tombstone. When the manifest is a tombstone, the origin has unenrolled from WAICT, so the user-agent MUST instead enforce any provided SRI metadata and applicable integrity policy as normal. This allows origins to offer support for all three standards simultaneously without requiring user-agents to hash resources multiple times or enter inconsistent enforcement states. WAICT deliberately uses the same type of integrity checks as SRI in order to allow the same codepaths to be used.
 
 > [!NOTE]
 > In the future, we may look to merge these specifications or rely on them explicitly.
@@ -540,6 +540,10 @@ The use of the `Integrity-Policy-WAICT-v1` header is essential for the overall s
 User-agents only gain a cryptographic security benefit from categories set to `enforce` mode. Because each category is ratcheted independently, a site may simultaneously offer strong guarantees in one category (e.g. `mode-script=enforce`) while still iterating in another (e.g. `mode-wasm=warn`); user-agents must not assume that a single category in `enforce` mode implies enforcement of others.
 
 WAICT V1 forces the use of SHA256 for hashing, unlike SRI which supports a family of hash functions. Using a fixed hash function is necessary to enable user-agents to begin hashing integrity-checked resources before a manifest is available (and so preserve existing website performance). If the security of SHA256 is called into question by future cryptologic advances, a new version of WAICT will need to be defined with a new hash function.
+
+### SRI
+
+A request covered by WAICT causes the user-agent to ignore any SRI metadata and applicable integrity policy in favour of WAICT (see [Interaction with SRI and Integrity Policy](#interaction-with-sri-and-integrity-policy)). A tombstone signals that the origin has unenrolled from WAICT, so user-agents resume enforcing SRI metadata and integrity policy as soon as they observe a tombstone, rather than waiting for their retained WAICT state to expire.
 
 ### Cross-origin iframes
 
