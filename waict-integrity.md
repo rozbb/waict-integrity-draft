@@ -118,7 +118,7 @@ WAICT integrity checks apply to all covered responses regardless of whether they
 
 ### Upgrades and Downgrades
 
-Origins may change their WAICT header over time. For example, an origin may evaluate the `mode-script` category in `report` mode and later switch to `enforce`. Alternatively, a site may be enforcing WAICT for one category and wish to add another, change the scope of covered resources, or disable a category entirely. However, user-agents MUST enforce certain rules to prevent downgrade attacks - where a site alters its WAICT signalling in order to enable attacks. Each category is ratcheted independently: upgrading one category is immediate, but downgrading or removing it requires waiting out that category's previously committed `max-age`.
+Origins may change their WAICT header over time. For example, an origin may evaluate the `mode-script` category in `report` mode and later switch to `enforce`. Alternatively, a site may be enforcing WAICT for one category and wish to add another, change the scope of covered resources, or disable a category entirely. However, user-agents MUST enforce certain rules to prevent downgrade attacks - where a site alters its WAICT signalling in order to enable attacks. Each category is ratcheted independently: upgrading one category is immediate, but downgrading or removing it requires waiting out the `max-age` of the header in which that category was last seen.
 
 To prevent downgrade attacks, user-agents MUST store WAICT state for each top-level origin that has advertised WAICT, partitioned by top-level origin. The stored record is composed of:
 
