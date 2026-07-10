@@ -564,6 +564,12 @@ The Scope rule covers same-origin iframes but not cross-origin ones. A same-orig
 
 A user-agent will reveal in its `Integrity-Policy-WAICT-v1-Req` header which manifest URL it has received in an `Integrity-Policy-WAICT-v1` header. This can be used to link a user-agent across individual requests to the same origin. This fingerprinting risk is the same as that of first-party cookies, i.e., any origin which includes a `Set-Cookie` response header can similarly track any cookie-respecting user-agent across individual requests. User-agents MUST partition WAICT state to top-level origins (as they would for cookies). Similarly, when the user-agent is instructed to clear storage for an origin, the user-agent must clear WAICT state.
 
+### Privacy Considerations
+
+The `Sec-CH-WAICT` client hint reveals only which WAICT versions a user-agent supports. Because this is determined by the user-agent's implementation rather than by any user- or session-specific state, it adds essentially no entropy beyond what the `User-Agent` string already exposes, and so poses a negligible fingerprinting risk.
+
+WAICT relies on retained state to enforce a site's policy. In private browsing (and other modes without access to long-term state), this state does not persist across sessions, so a user-agent will not enforce WAICT on a fresh visit until it re-observes an `Integrity-Policy-WAICT-v1` header. Sites that require protection from the first request in such contexts must rely on [Preloading](#preloading).
+
 ## Browser UX Integration
 
 Browsers should not expose WAICT state to end users unless an irrecovable error arises. However, web developers should be able to access WAICT information to aid debugging their implementations.
