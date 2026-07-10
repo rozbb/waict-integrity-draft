@@ -369,9 +369,9 @@ Passive-class categories (`mode-image`, `mode-font`, `mode-media`) do not impose
 
 ## `srcdoc` Iframes
 
-When `mode-frame` is set to `enforce` or `warn`, the user-agent MUST block use of the [`srcdoc`](https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-srcdoc) attribute on `<iframe>` elements. The `srcdoc` attribute embeds an entire HTML document — including any scripts, styles, and other resources defined inline within it — in the attribute value, bypassing both the network and the manifest. CSP does not provide a source expression for `srcdoc`, so this restriction is enforced directly by the user-agent rather than as a source-expression removal.
+The `srcdoc` attribute embeds an entire HTML document — including any scripts, styles, and other resources defined inline within it — in the attribute value, bypassing both the network and the manifest. CSP does not provide a source expression for `srcdoc`, so this restriction is enforced directly by the user-agent rather than as a source-expression removal.
 
-When `mode-frame` is set to `report`, the user-agent MUST permit the `srcdoc` document to load and MUST report the violation as an `inline_violation` against `mode-frame` (see [Handling Failures](#handling-failures)).
+When `mode-frame` is in use, use of the [`srcdoc`](https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-srcdoc) attribute on an `<iframe>` element is reported as an `inline_violation` against `mode-frame` and handled under the mode of `mode-frame` (see [Handling Failures](#handling-failures)): the user-agent blocks loading the `srcdoc` document in `enforce` mode, permits it with a user-visible warning in `warn` mode, and permits it with a developer-facing report in `report` mode.
 
 # Changes to WebAssembly Processing
 
