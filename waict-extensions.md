@@ -15,7 +15,7 @@ The mechanism generalizes the vendor preload list of [§Preloading](waict-integr
 
 # Verifier Registration
 
-A user-agent MUST support registering one or more verifiers. A registration declares a set of origin match patterns, scheme and host, without a path (e.g. `<all_urls>`, `*://*.onion`, `https://*.example.com`), scoping which origins the verifier is consulted for; the user-agent MUST NOT query a verifier for an origin outside its patterns. Registered verifiers are ordered by registration (a user-agent MAY let the user reorder them); this order alone resolves which verifier governs an origin that more than one would claim.
+A user-agent MUST support registering one or more verifiers. A registration declares a set of origin match patterns, scheme and host, without a path (e.g. `<all_urls>`, `*://*.onion`, `https://*.example.com`), scoping which origins the verifier is consulted for; the user-agent MUST NOT query a verifier for an origin outside its patterns. Registered verifiers are ordered by time of registration (a user-agent MAY let the user reorder them); this order alone resolves which verifier governs an origin that more than one would claim.
 
 
 # The Enrollment Query
